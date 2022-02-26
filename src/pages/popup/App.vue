@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 const form = reactive({
   name: "",
   region: "",
@@ -71,6 +71,9 @@ const form = reactive({
 const onSubmit = () => {
   console.log("submit!");
 };
+onMounted(() => {
+  //alert(11);
+});
 </script>
 
 <style lang="scss"></style>

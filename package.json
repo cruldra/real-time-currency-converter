@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@js-joda/core": "^5.2.0",
     "core-js": "^3.8.3",
     "element-plus": "^2.0.3",
     "vue": "^3.2.13",
