@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "element-plus": "^2.0.3",
     "vue": "^3.2.13",
     "vuex": "^4.0.0"
   },
@@ -38,6 +39,8 @@
     "sass-loader": "^12.0.0",
     "ts-jest": "^27.0.4",
     "typescript": "~4.5.5",
+    "unplugin-auto-import": "^0.6.1",
+    "unplugin-vue-components": "^0.17.21",
     "vue-cli-plugin-chrome-ext": "^0.0.5"
   }
 }
