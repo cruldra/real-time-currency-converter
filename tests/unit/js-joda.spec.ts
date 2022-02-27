@@ -1,4 +1,4 @@
-import { DateTimeFormatter, LocalDateTime } from "@js-joda/core";
+import { DateTimeFormatter, Duration, LocalDateTime } from "@js-joda/core";
 
 describe("js-joda", () => {
   it("local-datetime", () => {
@@ -6,5 +6,9 @@ describe("js-joda", () => {
       DateTimeFormatter.ofPattern("yyyy-MM-dd")
     );
     console.log(now);
+  });
+
+  it("duration to seconds", () => {
+    expect(Duration.ofMinutes(3).seconds() == 180);
   });
 });

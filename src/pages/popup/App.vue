@@ -57,7 +57,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue";
+import { onBeforeUnmount, onMounted, onUnmounted, reactive } from "vue";
+import reloadAllExchangeRateJob from "@/jobs/ReloadAllExchangeRateJob";
+
 const form = reactive({
   name: "",
   region: "",
@@ -72,7 +74,10 @@ const onSubmit = () => {
   console.log("submit!");
 };
 onMounted(() => {
-  //alert(11);
+  reloadAllExchangeRateJob.start();
+});
+onBeforeUnmount(() => {
+  reloadAllExchangeRateJob.stop();
 });
 </script>
 
