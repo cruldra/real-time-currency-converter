@@ -14,6 +14,10 @@ interface ExchangeRateRepository {
   reloadAll(): void;
 
   /**
+   * list of supported currency codes
+   */
+  supportedCurrencyCodes(): string[];
+  /**
    * get exchange rate between {@link srcCode} and {@link targetCode}
    * @param srcCode source currency code
    * @param targetCode target currency code
@@ -29,10 +33,13 @@ interface ExchangeRateRepository {
 }
 
 class DefaultExchangeRateDataService implements ExchangeRateRepository {
+  private _supportedCurrencyCodes: string[] = [];
+
   async reloadAll(): Promise<void> {
     const resp = await fiatCurrencyExchangeRateApi.listExchangeRatesBaseEUR();
     await db.exchangeRates.clear();
-    const data = Object.keys(resp.rates).map((k) => {
+    this._supportedCurrencyCodes = Object.keys(resp.rates);
+    const data = this._supportedCurrencyCodes.map((k) => {
       return {
         srcCode: "EUR",
         targetCode: k,
@@ -55,7 +62,9 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
         });
     }
   }
-
+  supportedCurrencyCodes(): string[] {
+    return this._supportedCurrencyCodes;
+  }
   async findBy(
     srcCode: string,
     targetCode: string,
