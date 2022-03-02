@@ -13,12 +13,17 @@ module.exports = {
   pages,
   filenameHashing: false,
   configureWebpack: {
+    devtool: "source-map",
     plugins: [
       new CopyWebpackPlugin({
         patterns: [
           {
             from: path.resolve("manifest.json"),
             to: `${path.resolve("dist")}/manifest.json`,
+          },
+          {
+            from: path.resolve("_locales"),
+            to: `${path.resolve("dist")}/_locales`,
           },
         ],
       }),

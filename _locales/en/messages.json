@@ -1,0 +1,10 @@
+{
+  "name": {
+    "message": "Currency Converter",
+    "description": "chrome extension name"
+  },
+  "description": {
+    "message": "A real-time currency converter",
+    "description": "chrome extension description"
+  }
+}

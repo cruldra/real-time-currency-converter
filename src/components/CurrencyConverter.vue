@@ -23,7 +23,7 @@
       @click="
         model.currencies.push('USD');
         model.values.push(1);
-        calc(latestUpdate, model.values[latestUpdate]);
+        calc(latestUpdate);
       "
     >
       添加
@@ -106,7 +106,7 @@ const options: Array<SelectOption | SelectGroupOption> = currencies.map(
 
 const disableUpdate = ref(false);
 const latestUpdate = ref(0);
-const calc = (index: number, newValue: number) => {
+const calc = (index: number) => {
   disableUpdate.value = true;
   let srcCurrency = model.currencies[index];
   let srcAmount = model.values[index];
@@ -129,7 +129,7 @@ const calc = (index: number, newValue: number) => {
   disableUpdate.value = false;
 };
 onMounted(async () => {
-  calc(0, model.values[0]);
+  calc(0);
 });
 </script>
 

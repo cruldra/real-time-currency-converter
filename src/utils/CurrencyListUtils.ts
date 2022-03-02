@@ -2,7 +2,6 @@ import { Currency } from "@/models/Currency";
 import CurrencyList from "currency-list";
 import { countries } from "countries-list";
 import getSymbolFromCurrency from "currency-symbol-map";
-import exchangeRateRepository from "@/repositories/ExchangeRateRepository";
 
 export default class CurrencyListUtils {
   private static currencies: Currency[] = [];

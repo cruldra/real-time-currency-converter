@@ -10,4 +10,4 @@ chromeName.forEach((name) => {
   };
 });
 
-module.exports=pages
+module.exports = pages;

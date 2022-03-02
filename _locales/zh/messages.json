@@ -1,0 +1,10 @@
+{
+  "name": {
+    "message": "货币转换器",
+    "description": "扩展程序名称"
+  },
+  "description": {
+    "message": "实时货币转换程序",
+    "description": "扩展程序描述"
+  }
+}

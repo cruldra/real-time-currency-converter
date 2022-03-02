@@ -1,21 +1,23 @@
 {
-    "manifest_version": 2,
-    "name": "vue3-chrome-ext",
-    "description": "chrome extension",
+    "manifest_version": 3,
+    "name": "__MSG_name__",
+    "description": "__MSG_description__",
+    "default_locale": "zh",
     "version": "0.0.1",
-    "options_page": "options.html",
-    "browser_action": {
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    "icons": {
+        "16": "img/copper_coins.png",
+        "48": "img/copper_coins.png",
+        "128": "img/copper_coins.png"
+    },
+    "permissions": ["contextMenus"],
+    "action": {
+        "default_title": "__MSG_name__",
         "default_popup": "popup.html"
     },
-    "background": {
-        "page": "background.html",
-        "persistent": false
-    },
-    "permissions": ["http://*/*", "https://*/*", "tabs", "contextMenus", "notifications", "webRequestBlocking", "storage", "activeTab", "declarativeContent"],
-    "content_scripts": [{
-        "matches": ["http://*/*", "https://*/*"],
-        "js": ["js/content.js"],
-        "run_at": "document_start"
-    }],
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+    "host_permissions": [
+        "*://*/*"
+    ]
 }
