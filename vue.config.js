@@ -2,19 +2,40 @@ const { defineConfig } = require("@vue/cli-service");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const pages = require("./pages");
-const AutoImport = require("unplugin-auto-import/webpack");
-const Components = require("unplugin-vue-components/webpack");
-const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
+const { DefinePlugin } = require("webpack");
+const fs = require("fs");
+
+function getFiles(dir) {
+  return fs.readdirSync(dir).flatMap((item) => {
+    const path = `${dir}/${item}`;
+    if (fs.statSync(path).isDirectory()) {
+      return getFiles(path);
+    }
+
+    return path;
+  });
+}
+const getSupportedLanguages = () => {
+  return getFiles("_locales").map((path) => {
+    const messages = JSON.parse(fs.readFileSync(path));
+    return {
+      label: messages["app_language"]["message"],
+      key: path.split("/")[1],
+    };
+  });
+};
 module.exports = defineConfig({
   transpileDependencies: true,
 });
-
 module.exports = {
   pages,
   filenameHashing: false,
   configureWebpack: {
     devtool: "source-map",
     plugins: [
+      new DefinePlugin({
+        __SUPPORTED_LANGUAGES__: JSON.stringify(getSupportedLanguages()),
+      }),
       new CopyWebpackPlugin({
         patterns: [
           {
@@ -26,12 +47,6 @@ module.exports = {
             to: `${path.resolve("dist")}/_locales`,
           },
         ],
-      }),
-      AutoImport({
-        resolvers: [ElementPlusResolver()],
-      }),
-      Components({
-        resolvers: [ElementPlusResolver()],
       }),
     ],
   },

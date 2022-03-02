@@ -5,13 +5,15 @@ interface Theme {
   name: string;
   value: GlobalTheme | null;
 }
+const theme_name_light = chrome.i18n.getMessage("app_theme_light");
+const theme_name_dark = chrome.i18n.getMessage("app_theme_dark");
 const availableThemes: Theme[] = [
   {
-    name: "深色",
+    name: theme_name_dark,
     value: darkTheme,
   },
   {
-    name: "浅色",
+    name: theme_name_light,
     value: null,
   },
 ];

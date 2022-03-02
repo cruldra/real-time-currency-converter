@@ -1,10 +1,30 @@
 {
-  "name": {
+  "chrome_extension_name": {
     "message": "Currency Converter",
     "description": "chrome extension name"
   },
-  "description": {
+  "chrome_extension_description": {
     "message": "A real-time currency converter",
     "description": "chrome extension description"
+  },
+  "app_language": {
+    "message": "English",
+    "description": "native text of current language"
+  },
+  "app_theme_light": {
+    "message": "Light",
+    "description": "theme name of light"
+  },
+  "app_theme_dark": {
+    "message": "Dark",
+    "description": "theme name of dark"
+  },
+  "add_conversion_button_text": {
+    "message": "Add",
+    "description": "button for adding a new currency conversion"
+  },
+  "delete_conversion_button_text": {
+    "message": "Delete",
+    "description": "button to remove currency conversion"
   }
 }

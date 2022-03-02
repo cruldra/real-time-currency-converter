@@ -1,7 +1,11 @@
 <template>
-  <n-config-provider :theme="currentTheme.value">
+  <n-config-provider
+    :theme="currentTheme.value"
+    :locale="naiveUiLocale"
+    :date-locale="naiveUiDateLocale"
+  >
     <n-page-header>
-      <template #title> 实时货币转换器 </template>
+      <template #title> {{ chrome_extension_name }} </template>
       <template #avatar>
         <n-avatar round :src="require('../../assets/copper_coins.png')" />
       </template>
@@ -10,7 +14,6 @@
           <n-button size="small" @click="toggleTheme">{{
             nextThemeName
           }}</n-button>
-          <n-button size="small">催更</n-button>
         </n-space>
       </template>
       <n-layout embedded content-style="padding: 5px;">
@@ -35,8 +38,10 @@ import {
   NGlobalStyle,
 } from "naive-ui";
 import UseTheme from "@/hooks/useTheme";
-const { currentTheme, nextThemeName, toggleTheme } = UseTheme();
+import useI18n from "@/hooks/useI18n";
 
+const { currentTheme, nextThemeName, toggleTheme } = UseTheme();
+const { chrome_extension_name, naiveUiLocale, naiveUiDateLocale } = useI18n();
 onBeforeMount(() => {
   reloadAllExchangeRateJob.start();
 });
@@ -47,7 +52,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 body {
-  width: 600px;
+  width: 580px;
   padding: 5px;
 }
 </style>

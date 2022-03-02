@@ -1,10 +1,30 @@
 {
-  "name": {
+  "chrome_extension_name": {
     "message": "货币转换器",
     "description": "扩展程序名称"
   },
-  "description": {
+  "chrome_extension_description": {
     "message": "实时货币转换程序",
     "description": "扩展程序描述"
+  },
+  "app_language": {
+    "message": "中文",
+    "description": "当前语言的母语文本"
+  },
+  "app_theme_light": {
+    "message": "浅色",
+    "description": "浅色主题的名称"
+  },
+  "app_theme_dark": {
+    "message": "深色",
+    "description": "深色主题的名称"
+  },
+  "add_conversion_button_text": {
+    "message": "新增",
+    "description": "用于添加一个新的货币转换的按钮"
+  },
+  "delete_conversion_button_text": {
+    "message": "删除",
+    "description": "用于删除货币转换的按钮"
   }
 }

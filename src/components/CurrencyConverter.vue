@@ -26,7 +26,7 @@
         calc(latestUpdate);
       "
     >
-      添加
+      {{ addNewConversionButtonText }}
     </n-button>
     <n-button
       v-if="model.currencies.length > 1"
@@ -37,7 +37,7 @@
         latestUpdate.value = 0;
       "
     >
-      删除
+      {{ deleteConversionButtonText }}
     </n-button>
   </n-space>
 </template>
@@ -56,6 +56,7 @@ import {
 import CurrencyListUtils from "@/utils/CurrencyListUtils";
 import currencyConversionService from "@/services/CurrencyConversionService";
 import MathUtils from "@/utils/MathUtils";
+import useI18n from "@/hooks/useI18n";
 interface Model {
   currencies: string[];
   values: number[];
@@ -87,13 +88,13 @@ const props = withDefaults(
 );
 
 //const { amount, src, targets } = toRefs(reactive(Object.assign({}, props)));
-
+const { addNewConversionButtonText, deleteConversionButtonText ,localeString2 } = useI18n();
 const model = reactive({
   currencies: [props.src, ...props.targets],
   values: [props.amount, ...Array(props.targets.length).fill(0)],
 } as Model);
 
-const currencies = CurrencyListUtils.get("zh_CN");
+const currencies = CurrencyListUtils.get(localeString2.value);
 const options: Array<SelectOption | SelectGroupOption> = currencies.map(
   (currency) => {
     return {
