@@ -88,7 +88,11 @@ const props = withDefaults(
 );
 
 //const { amount, src, targets } = toRefs(reactive(Object.assign({}, props)));
-const { addNewConversionButtonText, deleteConversionButtonText ,localeString2 } = useI18n();
+const {
+  addNewConversionButtonText,
+  deleteConversionButtonText,
+  localeString2,
+} = useI18n();
 const model = reactive({
   currencies: [props.src, ...props.targets],
   values: [props.amount, ...Array(props.targets.length).fill(0)],
