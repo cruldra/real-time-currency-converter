@@ -1,7 +1,7 @@
 /**
  * represents a currency
  */
-export interface Currency {
+export interface ICurrency {
   /**
    * name of this currency.eg Chinese Yuan
    */

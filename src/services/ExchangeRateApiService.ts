@@ -2,41 +2,64 @@ import {
   BaseService,
   GET,
   ServiceBuilder,
-  RequestInterceptorFunction,
-  ResponseInterceptorFunction,
   BasePath,
   Query,
+  Path,
 } from "ts-retrofit";
 import ArrayUtils from "@/utils/ArrayUtils";
-interface ExchangeRateApiService {
+
+/**
+ * Exchange rate api service
+ */
+interface IExchangeRateApiService {
+  /**
+   * Get the latest exchange rates available from the remote api
+   * @param base Change base currency (3-letter code, default: USD)
+   */
   latest(base: string): Promise<ExchangeRates>;
+
+  /**
+   * Get historical exchange rates for any date available from the remote api
+   * @param date The requested date in YYYY-MM-DD format (required).
+   * @param base Change base currency (3-letter code, default: USD)
+   */
+  histories(date: string, base: string): Promise<ExchangeRates>;
 }
 
-interface ExchangeRates {
+export interface ExchangeRates {
   [key: string]: number;
 }
 
 class OutisnemoApiService
   extends BaseService
-  implements ExchangeRateApiService
+  implements IExchangeRateApiService
 {
   @GET("/minimal-currency-converter")
   async latest(base = "EUR"): Promise<ExchangeRates> {
     return <ExchangeRates>{};
   }
+
+  histories(date: string, base: string): Promise<ExchangeRates> {
+    throw new Error("unsupported");
+  }
 }
+
 @BasePath("/api")
 class OpenExchangeRatesApiService
   extends BaseService
-  implements ExchangeRateApiService
+  implements IExchangeRateApiService
 {
   static apiKeys: string[] = ["15e0a8fb77f44c73baeb1614e548c284"];
 
-  /**
-   * Get the latest exchange rates available from the Open Exchange Rates API
-   */
   @GET("/latest.json")
-  async latest(@Query("base") base = "EUR"): Promise<ExchangeRates> {
+  async latest(@Query("base") base = "USD"): Promise<ExchangeRates> {
+    return <ExchangeRates>{};
+  }
+  @GET("/historical/{date}.json")
+  async histories(
+    @Path("date") date: string,
+    base = "USD"
+  ): Promise<ExchangeRates> {
     return <ExchangeRates>{};
   }
 }

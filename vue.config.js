@@ -36,13 +36,10 @@ module.exports = {
     plugins: [
       new DefinePlugin({
         __SUPPORTED_LANGUAGES__: JSON.stringify(getSupportedLanguages()),
+        __DATE_FORMAT_STRING__: JSON.stringify("yyyy-MM-dd"),
       }),
       new CopyWebpackPlugin({
         patterns: [
-          {
-            to: `${path.resolve("dist")}/currencies.json`,
-            from: path.resolve("src/repositories/currencies.json"),
-          },
           {
             from: path.resolve("manifest.json"),
             to: `${path.resolve("dist")}/manifest.json`,

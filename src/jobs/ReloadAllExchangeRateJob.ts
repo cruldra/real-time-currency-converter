@@ -8,7 +8,7 @@ const reloadAllExchangeRateJob = new CronJob(
   "0 */30 * * * *",
   async () => {
     console.log("job with reload all exchange rate is running...");
-    await exchangeRateRepository.reloadAll();
+    await exchangeRateRepository.table();
   },
   () => {
     console.log("job with reload all exchange rate has completed.");

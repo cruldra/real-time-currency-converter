@@ -1,13 +1,13 @@
 import Dexie, { Table } from "dexie";
-import { ExchangeRateDataModel } from "@/models/ExchangeRateDataModel";
+import { IExchangeRate } from "@/models/IExchangeRate";
 
 export class CurrencyConverterDatabase extends Dexie {
-  exchangeRates!: Table<ExchangeRateDataModel>;
+  exchangeRates!: Table<IExchangeRate>;
 
   constructor() {
     super("CurrencyConverterDatabase");
     this.version(1).stores({
-      exchangeRates: "[srcCode+targetCode]", // Primary key and indexed props
+      exchangeRates: "[date+srcCode+targetCode]", // Primary key and indexed props
     });
   }
 }

@@ -1,97 +1,120 @@
-import fiatCurrencyExchangeRateApi from "@/services/ExchangeRateApiService";
+import exchangeRateApi, {
+  ExchangeRates,
+} from "@/services/ExchangeRateApiService";
 import { db } from "@/db";
-import { ExchangeRateDataModel } from "@/models/ExchangeRateDataModel";
-import { LocalDateTime } from "@js-joda/core";
+import { IExchangeRate } from "@/models/IExchangeRate";
+import { LocalDate } from "@js-joda/core";
 import MathUtils from "@/utils/MathUtils";
+import DateUtils from "@/utils/DateUtils";
+import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
 
 /**
  * Data service of currency exchange rate
  */
 interface ExchangeRateRepository {
   /**
-   * load latest currency exchange rates table
+   * Load exchange rate table for a day
+   * @param date Date the exchange rate was published
    */
-  reloadAll(): void;
-
-  /**
-   * list of supported currency codes
-   */
-  supportedCurrencyCodes(): string[];
+  table(date: LocalDate): void;
   /**
    * get exchange rate between {@link srcCode} and {@link targetCode}
    * @param srcCode source currency code
    * @param targetCode target currency code
    * @param baseCode if no direct exchange rate between srcCode and targetCode is found,it will be calculated from this base value
    * @param decimal decimal of returned exchange rate value
+   * @param date date the exchange rate was published
    */
   findBy(
-    srcCode: string,
-    targetCode: string,
-    baseCode: string,
-    decimal: number
+    srcCode: TCurrencyCodes,
+    targetCode: TCurrencyCodes,
+    baseCode: TCurrencyCodes,
+    decimal: number,
+    date: LocalDate
   ): Promise<number>;
 }
 
 class DefaultExchangeRateDataService implements ExchangeRateRepository {
-  private _supportedCurrencyCodes: string[] = [];
+  private readonly baseCode: TCurrencyCodes | undefined;
 
-  private readonly baseCode: string | undefined;
-
-  constructor(baseCode = "USD") {
+  constructor(baseCode: TCurrencyCodes = "USD") {
     this.baseCode = baseCode;
   }
 
-  async reloadAll(): Promise<void> {
-    const rates = await fiatCurrencyExchangeRateApi.latest(this.baseCode);
-    await db.exchangeRates.clear();
-    this._supportedCurrencyCodes = Object.keys(rates);
-    const data = this._supportedCurrencyCodes.map((k) => {
-      return {
-        srcCode: this.baseCode,
-        targetCode: k,
-        value: rates[k],
-        updateTime: LocalDateTime.now(),
-      } as ExchangeRateDataModel;
-    });
-    db.exchangeRates
-      .bulkAdd(data)
-      .then(() => {
-        console.log(`Done adding ${data.length} ExchangeRateDataModels`);
-      })
-      .catch((e) => {
-        console.error(
-          `Some ExchangeRateDataModels did not succeed. However,${
-            data.length - e.failures.length
-          }ExchangeRateDataModels was added successfully`
-        );
+  async table(date: LocalDate = LocalDate.now()): Promise<void> {
+    let rates: ExchangeRates | undefined = undefined;
+    const dateStr = DateUtils.toString(date);
+    if (date.isEqual(LocalDate.now())) {
+      rates = await exchangeRateApi.latest(this.baseCode);
+    } else if (
+      date.isBefore(LocalDate.now()) &&
+      (
+        await db.exchangeRates
+          .where({
+            date: dateStr,
+          })
+          .toArray()
+      ).length == 0
+    ) {
+      rates = await exchangeRateApi.histories(dateStr, this.baseCode);
+    } else
+      throw new Error(
+        `Wrong date of ${dateStr}.Must specify today or a previous date`
+      );
+
+    if (rates) {
+      const data = Object.keys(rates).map((k) => {
+        return {
+          srcCode: this.baseCode,
+          targetCode: k,
+          value: rates ? rates[k] : 0,
+          date: dateStr,
+        } as IExchangeRate;
       });
+      db.exchangeRates
+        .bulkPut(data)
+        .then(() => {
+          console.log(`Done adding ${data.length} ExchangeRateDataModels`);
+        })
+        .catch((e) => {
+          console.error(e);
+          console.error(
+            `Some ExchangeRateDataModels did not succeed. However,${
+              data.length - e.failures.length
+            }ExchangeRateDataModels was added successfully`
+          );
+        });
+    }
   }
-  supportedCurrencyCodes(): string[] {
-    return this._supportedCurrencyCodes;
-  }
+
   async findBy(
-    srcCode: string,
-    targetCode: string,
-    baseCode = this.baseCode,
-    decimal = 6
+    srcCode: TCurrencyCodes,
+    targetCode: TCurrencyCodes,
+    baseCode: TCurrencyCodes | undefined = this.baseCode,
+    decimal = 6,
+    date: LocalDate = LocalDate.now()
   ): Promise<number> {
-    const exchangeRateEntry = await db.exchangeRates
+    const dateStr = DateUtils.toString(date);
+    const directExchangeRate = await db.exchangeRates
       .where({
+        date: dateStr,
         srcCode,
         targetCode,
       })
       .first();
-    if (exchangeRateEntry == undefined) {
+    if (directExchangeRate == undefined) {
       const rateOfBaseToSrc = await db.exchangeRates
         .where({
           srcCode: baseCode,
           targetCode: srcCode,
+          date: dateStr,
         })
         .first();
       const rateOfBaseToTarget = await db.exchangeRates
         .where({
           srcCode: baseCode,
           targetCode,
+          date: dateStr,
         })
         .first();
       if (rateOfBaseToTarget?.value && rateOfBaseToSrc?.value) {
@@ -100,7 +123,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
           decimal
         );
       } else return 0;
-    } else return exchangeRateEntry.value;
+    } else return MathUtils.round(directExchangeRate.value, decimal);
   }
 }
 

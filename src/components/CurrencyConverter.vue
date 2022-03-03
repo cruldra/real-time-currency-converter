@@ -15,7 +15,7 @@
       filterable
       :options="options"
       size="large"
-      @update:value="calc(latestUpdate, model.values[latestUpdate])"
+      @update:value="calc(latestUpdate)"
     />
     <n-button
       v-if="i === model.currencies.length - 1"
@@ -34,7 +34,7 @@
       @click="
         model.currencies.splice(i, 1);
         model.values.splice(i, 1);
-        latestUpdate.value = 0;
+        latestUpdate = 0;
       "
     >
       {{ deleteConversionButtonText }}
@@ -55,8 +55,10 @@ import {
 import currencyConversionService from "@/services/CurrencyConversionService";
 import MathUtils from "@/utils/MathUtils";
 import useI18n from "@/hooks/useI18n";
+import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
+import exchangeRateRepository from "@/repositories/ExchangeRateRepository";
 interface Model {
-  currencies: string[];
+  currencies: TCurrencyCodes[];
   values: number[];
 }
 const props = withDefaults(
@@ -69,17 +71,17 @@ const props = withDefaults(
     /**
      * source currency code
      */
-    src?: string;
+    src?: TCurrencyCodes;
 
     /**
      * target currency codes
      */
-    targets?: string[];
+    targets?: TCurrencyCodes[];
   }>(),
   {
     amount: 1,
     src: "CNY",
-    targets: () => {
+    targets: (): TCurrencyCodes[] => {
       return ["AED"];
     },
   }
@@ -113,25 +115,29 @@ const calc = (index: number) => {
   disableUpdate.value = true;
   let srcCurrency = model.currencies[index];
   let srcAmount = model.values[index];
-  console.log({ srcCurrency, srcAmount });
-  model.currencies.forEach(async (currency: string, i: number) => {
+  model.currencies.forEach(async (currency: TCurrencyCodes, i: number) => {
     if (i !== index) {
-      model.values[i] = MathUtils.round(
-        await currencyConversionService.convert(
-          srcCurrency,
-          currency,
-          srcAmount
-        ),
-        6
+      const targetAmount = await currencyConversionService.convert(
+        srcCurrency,
+        currency,
+        srcAmount
       );
+      model.values[i] = MathUtils.round(targetAmount, 6);
 
-      console.log({ target: model.currencies[i], value: model.values[i] });
+      console.log({
+        srcCurrency,
+        srcAmount,
+        targetCurrency: currency,
+        targetValue: targetAmount,
+        rate: await exchangeRateRepository.findBy(srcCurrency, currency),
+      });
     }
   });
   latestUpdate.value = index;
   disableUpdate.value = false;
 };
 onMounted(async () => {
+  console.log(model);
   calc(0);
 });
 </script>
