@@ -1,5 +1,6 @@
 const { defineConfig } = require("@vue/cli-service");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
 const path = require("path");
 const pages = require("./pages");
 const { DefinePlugin } = require("webpack");
@@ -17,7 +18,7 @@ function getFiles(dir) {
 }
 const getSupportedLanguages = () => {
   return getFiles("_locales").map((path) => {
-    const messages = JSON.parse(fs.readFileSync(path));
+    const messages = JSON.parse(fs.readFileSync(path).toString());
     return {
       label: messages["app_language"]["message"],
       key: path.split("/")[1],
@@ -39,6 +40,10 @@ module.exports = {
       new CopyWebpackPlugin({
         patterns: [
           {
+            to: `${path.resolve("dist")}/currencies.json`,
+            from: path.resolve("src/repositories/currencies.json"),
+          },
+          {
             from: path.resolve("manifest.json"),
             to: `${path.resolve("dist")}/manifest.json`,
           },
@@ -49,5 +54,9 @@ module.exports = {
         ],
       }),
     ],
+    optimization: {
+      minimize: true,
+      minimizer: [new JsonMinimizerPlugin()],
+    },
   },
 };

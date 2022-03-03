@@ -1,4 +1,3 @@
-import fiatCurrencyExchangeRateApi from "@/services/OutisnemoApiService";
 import StringUtils from "@/utils/StringUtils";
 
 describe("string", () => {

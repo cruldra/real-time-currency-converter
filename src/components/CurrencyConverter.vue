@@ -8,7 +8,7 @@
       class="amount"
       @update:value="!disableUpdate && calc(i, $event)"
     >
-      <template #prefix>{{ getSymbolFromCurrency(currency) }}</template>
+      <template #prefix>{{ getCurrencySymbol(currency) }}</template>
     </n-input-number>
     <n-select
       v-model:value="model.currencies[i]"
@@ -44,7 +44,6 @@
 
 <script lang="ts" setup>
 import { defineProps, onMounted, reactive, ref, withDefaults } from "vue";
-import getSymbolFromCurrency from "currency-symbol-map";
 import {
   NInputNumber,
   NSpace,
@@ -53,7 +52,6 @@ import {
   SelectOption,
   NButton,
 } from "naive-ui";
-import CurrencyListUtils from "@/utils/CurrencyListUtils";
 import currencyConversionService from "@/services/CurrencyConversionService";
 import MathUtils from "@/utils/MathUtils";
 import useI18n from "@/hooks/useI18n";
@@ -91,15 +89,15 @@ const props = withDefaults(
 const {
   addNewConversionButtonText,
   deleteConversionButtonText,
-  localeString2,
+  currencies,
+  getCurrencySymbol,
 } = useI18n();
 const model = reactive({
   currencies: [props.src, ...props.targets],
   values: [props.amount, ...Array(props.targets.length).fill(0)],
 } as Model);
 
-const currencies = CurrencyListUtils.get(localeString2.value);
-const options: Array<SelectOption | SelectGroupOption> = currencies.map(
+const options: Array<SelectOption | SelectGroupOption> = currencies.value.map(
   (currency) => {
     return {
       label: `${currency.emoji} ${currency.code} —— ${currency.name}`,

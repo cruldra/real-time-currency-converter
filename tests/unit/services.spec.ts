@@ -1,8 +1,8 @@
-import fiatCurrencyExchangeRateApi from "@/services/OutisnemoApiService";
+import exchangeRateApi from "@/services/ExchangeRateApiService";
 
 describe("services", () => {
   it("fiatCurrencyExchangeRateApi", async () => {
-    const resp = await fiatCurrencyExchangeRateApi.listExchangeRatesBaseEUR();
-    console.log(resp.rates["CNY"]);
+    const rates = await exchangeRateApi.latest();
+    console.log(rates["CNY"]);
   });
 });

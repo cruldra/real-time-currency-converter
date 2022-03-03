@@ -1,4 +1,4 @@
-import fiatCurrencyExchangeRateApi from "@/services/OutisnemoApiService";
+import fiatCurrencyExchangeRateApi from "@/services/ExchangeRateApiService";
 import { db } from "@/db";
 import { ExchangeRateDataModel } from "@/models/ExchangeRateDataModel";
 import { LocalDateTime } from "@js-joda/core";
@@ -35,32 +35,36 @@ interface ExchangeRateRepository {
 class DefaultExchangeRateDataService implements ExchangeRateRepository {
   private _supportedCurrencyCodes: string[] = [];
 
+  private readonly baseCode: string | undefined;
+
+  constructor(baseCode = "USD") {
+    this.baseCode = baseCode;
+  }
+
   async reloadAll(): Promise<void> {
-    const resp = await fiatCurrencyExchangeRateApi.listExchangeRatesBaseEUR();
+    const rates = await fiatCurrencyExchangeRateApi.latest(this.baseCode);
     await db.exchangeRates.clear();
-    this._supportedCurrencyCodes = Object.keys(resp.rates);
+    this._supportedCurrencyCodes = Object.keys(rates);
     const data = this._supportedCurrencyCodes.map((k) => {
       return {
-        srcCode: "EUR",
+        srcCode: this.baseCode,
         targetCode: k,
-        value: resp.rates[k],
+        value: rates[k],
         updateTime: LocalDateTime.now(),
       } as ExchangeRateDataModel;
     });
-    if (resp.success) {
-      db.exchangeRates
-        .bulkAdd(data)
-        .then(() => {
-          console.log(`Done adding ${data.length} ExchangeRateDataModels`);
-        })
-        .catch((e) => {
-          console.error(
-            `Some ExchangeRateDataModels did not succeed. However,${
-              data.length - e.failures.length
-            }ExchangeRateDataModels was added successfully`
-          );
-        });
-    }
+    db.exchangeRates
+      .bulkAdd(data)
+      .then(() => {
+        console.log(`Done adding ${data.length} ExchangeRateDataModels`);
+      })
+      .catch((e) => {
+        console.error(
+          `Some ExchangeRateDataModels did not succeed. However,${
+            data.length - e.failures.length
+          }ExchangeRateDataModels was added successfully`
+        );
+      });
   }
   supportedCurrencyCodes(): string[] {
     return this._supportedCurrencyCodes;
@@ -68,7 +72,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
   async findBy(
     srcCode: string,
     targetCode: string,
-    baseCode = "EUR",
+    baseCode = this.baseCode,
     decimal = 6
   ): Promise<number> {
     const exchangeRateEntry = await db.exchangeRates

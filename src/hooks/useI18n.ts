@@ -3,6 +3,9 @@ import { __SUPPORTED_LANGUAGES__ } from "@/global";
 import { NLocale } from "naive-ui/lib/locales/common/enUS";
 import { NDateLocale } from "naive-ui/lib/locales/date/enUS";
 import StringUtils from "@/utils/StringUtils";
+import currencyRepository, {
+  TLocaleCodes,
+} from "@/repositories/CurrencyRepository";
 export default function () {
   const chrome_extension_name = ref(
     chrome.i18n.getMessage("chrome_extension_name")
@@ -22,6 +25,14 @@ export default function () {
   const naiveUiDateLocale = ref<NDateLocale | null>(null);
   const localeString = chrome.i18n.getUILanguage().replace("-", "");
   const localeString2 = ref(chrome.i18n.getUILanguage().replace("-", "_"));
+  const currencies = ref(
+    currencyRepository.findByLocale(<TLocaleCodes>localeString2.value)
+  );
+  const getCurrencySymbol = (code: string): string | undefined => {
+    return currencies.value.find((currency) => {
+      return currency.code == code;
+    })?.symbol;
+  };
   import(`naive-ui`).then((navui: { [key: string]: any }) => {
     naiveUiLocale.value = <NLocale>navui[localeString];
     naiveUiDateLocale.value = <NDateLocale>(
@@ -40,5 +51,7 @@ export default function () {
     addNewConversionButtonText,
     deleteConversionButtonText,
     localeString2,
+    currencies,
+    getCurrencySymbol,
   };
 }
