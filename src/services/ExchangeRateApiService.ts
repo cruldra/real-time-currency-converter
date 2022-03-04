@@ -7,6 +7,8 @@ import {
   Path,
 } from "ts-retrofit";
 import ArrayUtils from "@/utils/ArrayUtils";
+import userSettingRepository from "@/repositories/UserSettingRepository";
+import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
 
 /**
  * Exchange rate api service
@@ -16,14 +18,14 @@ interface IExchangeRateApiService {
    * Get the latest exchange rates available from the remote api
    * @param base Change base currency (3-letter code, default: USD)
    */
-  latest(base: string): Promise<ExchangeRates>;
+  latest(base: TCurrencyCodes): Promise<ExchangeRates>;
 
   /**
    * Get historical exchange rates for any date available from the remote api
    * @param date The requested date in YYYY-MM-DD format (required).
    * @param base Change base currency (3-letter code, default: USD)
    */
-  histories(date: string, base: string): Promise<ExchangeRates>;
+  histories(date: string, base: TCurrencyCodes): Promise<ExchangeRates>;
 }
 
 export interface ExchangeRates {
@@ -35,11 +37,11 @@ class OutisnemoApiService
   implements IExchangeRateApiService
 {
   @GET("/minimal-currency-converter")
-  async latest(base = "EUR"): Promise<ExchangeRates> {
+  async latest(base: TCurrencyCodes = "EUR"): Promise<ExchangeRates> {
     return <ExchangeRates>{};
   }
 
-  histories(date: string, base: string): Promise<ExchangeRates> {
+  histories(date: string, base: TCurrencyCodes): Promise<ExchangeRates> {
     throw new Error("unsupported");
   }
 }
@@ -49,16 +51,16 @@ class OpenExchangeRatesApiService
   extends BaseService
   implements IExchangeRateApiService
 {
-  static apiKeys: string[] = ["15e0a8fb77f44c73baeb1614e548c284"];
-
   @GET("/latest.json")
-  async latest(@Query("base") base = "USD"): Promise<ExchangeRates> {
+  async latest(
+    @Query("base") base: TCurrencyCodes = "USD"
+  ): Promise<ExchangeRates> {
     return <ExchangeRates>{};
   }
   @GET("/historical/{date}.json")
   async histories(
     @Path("date") date: string,
-    base = "USD"
+    base: TCurrencyCodes = "USD"
   ): Promise<ExchangeRates> {
     return <ExchangeRates>{};
   }
@@ -88,10 +90,11 @@ const openExchangeRatesApiService = new ServiceBuilder()
   .setEndpoint("https://openexchangerates.org")
   .setStandalone(true)
   .setTimeout(30000)
-  .setRequestInterceptors((config) => {
+  .setRequestInterceptors(async (config) => {
     console.log("Before sending request to server.");
+
     config.params["app_id"] = ArrayUtils.randomItem(
-      OpenExchangeRatesApiService.apiKeys
+      (await userSettingRepository.get()).apiKeys
     );
     return config;
   })
@@ -101,6 +104,14 @@ const openExchangeRatesApiService = new ServiceBuilder()
     return response.data["rates"];
   })
   .build(OpenExchangeRatesApiService);
-
-const exchangeRateApi = openExchangeRatesApiService;
-export default exchangeRateApi;
+export type TApi = "OpenExchange" | "Outisnemo";
+export const supportedApis: TApi[] = ["OpenExchange", "Outisnemo"];
+const apiFactory = (name: TApi): IExchangeRateApiService => {
+  switch (name) {
+    case "OpenExchange":
+      return openExchangeRatesApiService;
+    case "Outisnemo":
+      return outisnemoApiService;
+  }
+};
+export default apiFactory;

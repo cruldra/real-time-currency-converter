@@ -1,5 +1,6 @@
-import exchangeRateApi, {
+import apiFactory, {
   ExchangeRates,
+  TApi,
 } from "@/services/ExchangeRateApiService";
 import { db } from "@/db";
 import { IExchangeRate } from "@/models/IExchangeRate";
@@ -7,6 +8,7 @@ import { LocalDate } from "@js-joda/core";
 import MathUtils from "@/utils/MathUtils";
 import DateUtils from "@/utils/DateUtils";
 import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
+import userSettingRepository from "@/repositories/UserSettingRepository";
 
 /**
  * Data service of currency exchange rate
@@ -35,7 +37,7 @@ interface ExchangeRateRepository {
 }
 
 class DefaultExchangeRateDataService implements ExchangeRateRepository {
-  private readonly baseCode: TCurrencyCodes | undefined;
+  private readonly baseCode: TCurrencyCodes;
 
   constructor(baseCode: TCurrencyCodes = "USD") {
     this.baseCode = baseCode;
@@ -43,6 +45,8 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
 
   async table(date: LocalDate = LocalDate.now()): Promise<void> {
     let rates: ExchangeRates | undefined = undefined;
+    const userSetting = await userSettingRepository.get();
+    const exchangeRateApi = apiFactory(<TApi>userSetting.preferredApi);
     const dateStr = DateUtils.toString(date);
     if (date.isEqual(LocalDate.now())) {
       rates = await exchangeRateApi.latest(this.baseCode);

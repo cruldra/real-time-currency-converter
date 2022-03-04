@@ -26,5 +26,27 @@
   "delete_conversion_button_text": {
     "message": "删除",
     "description": "用于删除货币转换的按钮"
+  },
+
+  "user_setting_form_item_preferred_api": {
+    "message": "{\"required_message\":\"必须选择一个用于更新汇率数据的api\",\"label\":\"首选API\"}",
+    "description": "用户设置表单项: IUserSetting.preferredApi"
+  },
+
+  "user_setting_form_item_update_frequency": {
+    "message": "{\"label\":\"更新频率\"}",
+    "description": "用户设置表单项: IUserSetting.updateFrequency"
+  },
+  "user_setting_form_item_enable_historical_reporting": {
+    "message": "{\"label\":\"启用历史报表\"}",
+    "description": "用户设置表单项: IUserSetting.enableHistoricalReporting"
+  },
+  "user_setting_form_item_api_keys": {
+    "message": "{\"label\":\"API密钥\"}",
+    "description": "用户设置表单项: IUserSetting.apiKeys"
+  },
+  "user_setting_form_item_word_marking_rules": {
+    "message": "{\"label\":\"划词规则\"}",
+    "description": "用户设置表单项: IUserSetting.wordMarkingRules"
   }
 }

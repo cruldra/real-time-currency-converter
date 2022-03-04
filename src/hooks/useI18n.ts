@@ -6,6 +6,7 @@ import StringUtils from "@/utils/StringUtils";
 import currencyRepository, {
   TLocaleCodes,
 } from "@/repositories/CurrencyRepository";
+import { IUserSetting } from "@/models/IUserSetting";
 export default function () {
   const chrome_extension_name = ref(
     chrome.i18n.getMessage("chrome_extension_name")
@@ -38,9 +39,27 @@ export default function () {
     naiveUiDateLocale.value = <NDateLocale>(
       navui[`date${StringUtils.capitalizeFirst(localeString)}`]
     );
-    console.log(naiveUiLocale);
-    console.log(naiveUiDateLocale);
   });
+
+  type TUserSettingFormItemNames = keyof IUserSetting;
+  type TFormItemI18n = { path: string; label: string };
+  const userSettingFormI18n: {
+    [key in TUserSettingFormItemNames]?: TFormItemI18n;
+  } = {};
+  [
+    "preferredApi",
+    "updateFrequency",
+    "enableHistoricalReporting",
+    "apiKeys",
+    "wordMarkingRules",
+  ].forEach((name) => {
+    userSettingFormI18n[<TUserSettingFormItemNames>name] = JSON.parse(
+      chrome.i18n.getMessage(
+        `user_setting_form_item_${StringUtils.toSnakeCase(name)}`
+      )
+    );
+  });
+
   return {
     chrome_extension_name,
     chrome_extension_description,
@@ -53,5 +72,6 @@ export default function () {
     localeString2,
     currencies,
     getCurrencySymbol,
+    userSettingFormI18n,
   };
 }

@@ -26,5 +26,28 @@
   "delete_conversion_button_text": {
     "message": "Delete",
     "description": "button to remove currency conversion"
+  },
+
+  "user_setting_form_item_preferred_api": {
+    "message": "{\"required_message\":\"You have to choose an api for updating exchange rate data\",\"label\":\"Preferred API\"}",
+    "description": "the form item of IUserSetting.preferredApi"
+  },
+
+  "user_setting_form_item_update_frequency": {
+    "message": "{\"label\":\"Update Frequency\"}",
+    "description": "the form item label of IUserSetting.preferredApi"
+  },
+  "user_setting_form_item_enable_historical_reporting": {
+    "message": "{\"label\":\"Enable Historical Reporting\"}",
+    "description": "the form item label of IUserSetting.enableHistoricalReporting"
+  },
+  "user_setting_form_item_api_keys": {
+    "message": "{\"label\":\"API Keys\"}",
+    "description": "the form item label of IUserSetting.apiKeys"
+  },
+  "user_setting_form_item_word_marking_rules": {
+    "message": "{\"label\":\"Word Marking Rules\"}",
+    "description": "the form item label of IUserSetting.wordMarkingRules"
   }
+
 }
