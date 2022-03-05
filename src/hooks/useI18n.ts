@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 import { __SUPPORTED_LANGUAGES__ } from "@/global";
 import { NLocale } from "naive-ui/lib/locales/common/enUS";
 import { NDateLocale } from "naive-ui/lib/locales/date/enUS";
@@ -7,6 +7,26 @@ import currencyRepository, {
   TLocaleCodes,
 } from "@/repositories/CurrencyRepository";
 import { IUserSetting } from "@/models/IUserSetting";
+export type TUserSettingFormItemNames = keyof IUserSetting;
+export type TFormItemI18n = {
+  path: string;
+  label: string;
+  required_message?: string;
+  placeholder?: string;
+  referLink?: string;
+};
+export type TUserSettingFormItems = {
+  [key in TUserSettingFormItemNames]?: TFormItemI18n;
+};
+
+export type TUserSettingFormI18n = {
+  save: {
+    [key in "success" | "fail"]:
+      | string
+      | ((substitutions?: string | string[] | undefined) => string);
+  };
+  items: TUserSettingFormItems;
+};
 export default function () {
   const chrome_extension_name = ref(
     chrome.i18n.getMessage("chrome_extension_name")
@@ -40,12 +60,22 @@ export default function () {
       navui[`date${StringUtils.capitalizeFirst(localeString)}`]
     );
   });
-
-  type TUserSettingFormItemNames = keyof IUserSetting;
-  type TFormItemI18n = { path: string; label: string };
-  const userSettingFormI18n: {
-    [key in TUserSettingFormItemNames]?: TFormItemI18n;
-  } = {};
+  const userSettingFormI18n: TUserSettingFormI18n = {
+    save: {
+      success: JSON.parse(
+        chrome.i18n.getMessage("user_setting_form_save_messages", "")
+      )["success"],
+      fail: (substitutions?: string | string[] | undefined) => {
+        return JSON.parse(
+          chrome.i18n.getMessage(
+            "user_setting_form_save_messages",
+            substitutions
+          )
+        )["fail"];
+      },
+    },
+    items: {},
+  };
   [
     "preferredApi",
     "updateFrequency",
@@ -53,7 +83,7 @@ export default function () {
     "apiKeys",
     "wordMarkingRules",
   ].forEach((name) => {
-    userSettingFormI18n[<TUserSettingFormItemNames>name] = JSON.parse(
+    userSettingFormI18n.items[<TUserSettingFormItemNames>name] = JSON.parse(
       chrome.i18n.getMessage(
         `user_setting_form_item_${StringUtils.toSnakeCase(name)}`
       )

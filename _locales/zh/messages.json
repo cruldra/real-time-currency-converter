@@ -42,11 +42,21 @@
     "description": "用户设置表单项: IUserSetting.enableHistoricalReporting"
   },
   "user_setting_form_item_api_keys": {
-    "message": "{\"label\":\"API密钥\"}",
+    "message": "{\"label\":\"API密钥\",\"placeholder\":\"api密钥,每行一个\",\"referLink\":\"点我申请\"}",
     "description": "用户设置表单项: IUserSetting.apiKeys"
   },
   "user_setting_form_item_word_marking_rules": {
-    "message": "{\"label\":\"划词规则\"}",
+    "message": "{\"label\":\"划词规则\",\"placeholder\":\"划词规则,每行一个\"}",
     "description": "用户设置表单项: IUserSetting.wordMarkingRules"
+  },
+  "user_setting_form_save_messages": {
+    "message": "{\"success\":\"保存成功!\",\"fail\":\"保存失败,原因: \\n $cause$\"}",
+    "description": "用户表单操作用到的提示消息",
+    "placeholders": {
+      "cause": {
+        "content": "$1",
+        "example": "未知的错误"
+      }
+    }
   }
 }

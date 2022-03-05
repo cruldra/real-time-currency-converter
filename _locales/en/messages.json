@@ -42,12 +42,21 @@
     "description": "the form item label of IUserSetting.enableHistoricalReporting"
   },
   "user_setting_form_item_api_keys": {
-    "message": "{\"label\":\"API Keys\"}",
+    "message": "{\"label\":\"API Keys\",\"placeholder\":\"api keys, one per line\",\"referLink\":\"Click me to apply\"}",
     "description": "the form item label of IUserSetting.apiKeys"
   },
   "user_setting_form_item_word_marking_rules": {
-    "message": "{\"label\":\"Word Marking Rules\"}",
+    "message": "{\"label\":\"Word Marking Rules\",\"placeholder\":\"word marking rules,one per line\"}",
     "description": "the form item label of IUserSetting.wordMarkingRules"
+  },
+  "user_setting_form_save_messages": {
+    "message": "{\"success\":\"Saved successfully!\",\"fail\":\"Failed to save,Cause: \\n $cause$\"}",
+    "description": "messages of the user setting form operations",
+    "placeholders": {
+      "cause": {
+        "content": "$1",
+        "example": "Unknown reason"
+      }
+    }
   }
-
 }

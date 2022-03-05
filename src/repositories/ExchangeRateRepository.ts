@@ -1,6 +1,6 @@
 import apiFactory, {
   ExchangeRates,
-  TApi,
+  TApiNames,
 } from "@/services/ExchangeRateApiService";
 import { db } from "@/db";
 import { IExchangeRate } from "@/models/IExchangeRate";
@@ -46,7 +46,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
   async table(date: LocalDate = LocalDate.now()): Promise<void> {
     let rates: ExchangeRates | undefined = undefined;
     const userSetting = await userSettingRepository.get();
-    const exchangeRateApi = apiFactory(<TApi>userSetting.preferredApi);
+    const exchangeRateApi = apiFactory(<TApiNames>userSetting.preferredApi);
     const dateStr = DateUtils.toString(date);
     if (date.isEqual(LocalDate.now())) {
       rates = await exchangeRateApi.latest(this.baseCode);

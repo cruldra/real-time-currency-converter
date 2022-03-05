@@ -5,6 +5,11 @@ export class Transformers {
     (value: any[]) => {
       return value.join(joiner);
     };
+  static StringToArray =
+    (delimiter: string | RegExp = /\r\n|\r|\n/) =>
+    (value: string) => {
+      return value.split(delimiter);
+    };
 }
 export default class ObjectMapper {
   static map(srcObj: any, mapObj: any, excludes: string[] = []) {

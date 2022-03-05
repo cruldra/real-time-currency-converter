@@ -1,6 +1,6 @@
 const pages = {};
 
-const chromeName = ["popup", "background", "options", "content"];
+const chromeName = ["popup", "background", "options", "content", "test"];
 
 chromeName.forEach((name) => {
   pages[name] = {

@@ -104,9 +104,21 @@ const openExchangeRatesApiService = new ServiceBuilder()
     return response.data["rates"];
   })
   .build(OpenExchangeRatesApiService);
-export type TApi = "OpenExchange" | "Outisnemo";
-export const supportedApis: TApi[] = ["OpenExchange", "Outisnemo"];
-const apiFactory = (name: TApi): IExchangeRateApiService => {
+export type TApiNames = "OpenExchange" | "Outisnemo";
+export type TApi = {
+  name: TApiNames;
+  referLink?: string;
+};
+export const supportedApis: TApi[] = [
+  {
+    name: "OpenExchange",
+    referLink: "https://openexchangerates.org/signup/free",
+  },
+  {
+    name: "Outisnemo",
+  },
+];
+const apiFactory = (name: TApiNames): IExchangeRateApiService => {
   switch (name) {
     case "OpenExchange":
       return openExchangeRatesApiService;
