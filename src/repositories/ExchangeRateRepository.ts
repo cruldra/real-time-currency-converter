@@ -9,7 +9,10 @@ import MathUtils from "@/utils/MathUtils";
 import DateUtils from "@/utils/DateUtils";
 import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
 import userSettingRepository from "@/repositories/UserSettingRepository";
-
+export type TDateExchangeRate = {
+  date: string;
+  value: ExchangeRates | undefined;
+};
 /**
  * Data service of currency exchange rate
  */
@@ -18,7 +21,23 @@ interface ExchangeRateRepository {
    * Load exchange rate table for a day
    * @param date Date the exchange rate was published
    */
-  table(date: LocalDate): void;
+  table(date: LocalDate): Promise<ExchangeRates | undefined>;
+
+  /**
+   * Get an array of exchange rate table .
+   * from the {@link beginDate} and according to the {@link pattern} to calculate the end date
+   * @param beginDate begin date
+   * @param pattern End date calculation pattern string. Consists of a +/- sign and the number of days.eg: +8 indicates to get the exchange rate table array from the {@link beginDate} to 8 days later
+   */
+  tables(
+    beginDate: LocalDate,
+    pattern: string
+  ): Promise<Array<TDateExchangeRate>>;
+  /**
+   * Check if there is exchange rate data for a certain day in the database
+   * @param date date
+   */
+  existByDate(date: LocalDate): Promise<boolean>;
   /**
    * get exchange rate between {@link srcCode} and {@link targetCode}
    * @param srcCode source currency code
@@ -37,30 +56,32 @@ interface ExchangeRateRepository {
 }
 
 class DefaultExchangeRateDataService implements ExchangeRateRepository {
-  private readonly baseCode: TCurrencyCodes;
+  readonly baseCode: TCurrencyCodes;
 
   constructor(baseCode: TCurrencyCodes = "USD") {
     this.baseCode = baseCode;
   }
 
-  async table(date: LocalDate = LocalDate.now()): Promise<void> {
+  async table(
+    date: LocalDate = LocalDate.now()
+  ): Promise<ExchangeRates | undefined> {
     let rates: ExchangeRates | undefined = undefined;
     const userSetting = await userSettingRepository.get();
     const exchangeRateApi = apiFactory(<TApiNames>userSetting.preferredApi);
     const dateStr = DateUtils.toString(date);
     if (date.isEqual(LocalDate.now())) {
       rates = await exchangeRateApi.latest(this.baseCode);
-    } else if (
-      date.isBefore(LocalDate.now()) &&
-      (
-        await db.exchangeRates
-          .where({
-            date: dateStr,
-          })
-          .toArray()
-      ).length == 0
-    ) {
-      rates = await exchangeRateApi.histories(dateStr, this.baseCode);
+    } else if (date.isBefore(LocalDate.now())) {
+      if (
+        (
+          await db.exchangeRates
+            .where({
+              date: dateStr,
+            })
+            .toArray()
+        ).length == 0
+      )
+        rates = await exchangeRateApi.histories(dateStr, this.baseCode);
     } else
       throw new Error(
         `Wrong date of ${dateStr}.Must specify today or a previous date`
@@ -89,6 +110,8 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
           );
         });
     }
+
+    return rates;
   }
 
   async findBy(
@@ -128,6 +151,57 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
         );
       } else return 0;
     } else return MathUtils.round(directExchangeRate.value, decimal);
+  }
+
+  async existByDate(date: LocalDate): Promise<boolean> {
+    const exchangeRatesOfCertainDay = await db.exchangeRates
+      .where({
+        date: DateUtils.toString(date),
+      })
+      .toArray();
+
+    return exchangeRatesOfCertainDay.length > 0;
+  }
+
+  async tables(
+    beginDate: LocalDate,
+    pattern: string
+  ): Promise<Array<TDateExchangeRate>> {
+    const match = /^([+-])(\d+)/g.exec(pattern);
+    if (!match)
+      throw new Error(
+        "You must specify a date pattern in a valid format. Like +8 or -8"
+      );
+    const direction = match[1];
+    const numbers = match[2];
+    const exchangeRates: Array<TDateExchangeRate> = [
+      {
+        date: DateUtils.toString(beginDate),
+        value: await this.table(beginDate),
+      },
+    ];
+    switch (direction) {
+      case "+":
+        for (let i = 1; i <= parseInt(numbers); i++) {
+          const date = beginDate.plusDays(i);
+          exchangeRates.push({
+            date: DateUtils.toString(date),
+            value: await this.table(date),
+          });
+        }
+        break;
+      case "-":
+        for (let i = 1; i <= parseInt(numbers); i++) {
+          const date = beginDate.minusDays(i);
+          exchangeRates.push({
+            date: DateUtils.toString(date),
+            value: await this.table(date),
+          });
+        }
+        break;
+    }
+
+    return exchangeRates;
   }
 }
 

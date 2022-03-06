@@ -5,21 +5,21 @@
     :date-locale="naiveUiDateLocale"
   >
     <n-page-header>
-      <template #title> {{ chrome_extension_name }} </template>
+      <template #title> {{ chrome_extension_name }}</template>
       <template #avatar>
         <n-avatar round :src="require('../../assets/copper_coins.png')" />
       </template>
       <template #extra>
         <n-space>
-          <n-button size="small" @click="toggleTheme">{{
-            nextThemeName
-          }}</n-button>
+          <n-button size="small" @click="toggleTheme"
+            >{{ nextThemeName }}
+          </n-button>
         </n-space>
       </template>
-      <n-layout embedded content-style="padding: 5px;">
-        <currency-converter />
-      </n-layout>
     </n-page-header>
+    <n-layout embedded content-style="padding: 10px;">
+      <currency-converter />
+    </n-layout>
     <n-global-style />
   </n-config-provider>
 </template>

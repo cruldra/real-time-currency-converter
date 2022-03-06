@@ -38,7 +38,7 @@
     "description": "the form item label of IUserSetting.preferredApi"
   },
   "user_setting_form_item_enable_historical_reporting": {
-    "message": "{\"label\":\"Enable Historical Reporting\"}",
+    "message": "{\"label\":\"Show Rates Chart\"}",
     "description": "the form item label of IUserSetting.enableHistoricalReporting"
   },
   "user_setting_form_item_api_keys": {
@@ -56,6 +56,24 @@
       "cause": {
         "content": "$1",
         "example": "Unknown reason"
+      }
+    }
+  },
+  "exchange_rate_chart_duration": {
+    "message": "{\"week\":{\"label\":\"7 Days\",\"value\":7},\"month\":{\"label\":\"30 Days\",\"value\":30}}",
+    "description": "The time span of the exchange rate chart"
+  },
+  "exchange_rate_chart_options": {
+    "message": "{\"title\":\"Exchange Rate Trends Between $source$ and Other Currencies in $days$ Days\"}",
+    "description": "The options i18n span of the exchange rate chart",
+    "placeholders": {
+      "source": {
+        "content": "$1",
+        "example": "CNY"
+      },
+      "days": {
+        "content": "$2",
+        "example": "7"
       }
     }
   }

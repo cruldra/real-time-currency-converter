@@ -5,7 +5,8 @@ const path = require("path");
 const pages = require("./pages");
 const { DefinePlugin } = require("webpack");
 const fs = require("fs");
-
+const profile = process.env["NODE_ENV"];
+console.log(`build for ${profile}..`);
 function getFiles(dir) {
   return fs.readdirSync(dir).flatMap((item) => {
     const path = `${dir}/${item}`;
@@ -52,7 +53,7 @@ module.exports = {
       }),
     ],
     optimization: {
-      minimize: true,
+      minimize: profile.startsWith("prod"),
       minimizer: [new JsonMinimizerPlugin()],
     },
   },

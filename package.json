@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service build-watch",
+    "serve": "NODE_ENV=dev  vue-cli-service build-watch ",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
@@ -15,6 +15,7 @@
     "core-js": "^3.8.3",
     "cron": "^1.8.2",
     "dexie": "^3.2.1",
+    "echarts": "^5.3.0",
     "object-mapper": "^6.2.0",
     "timezone-enum": "^1.0.1",
     "ts-retrofit": "^1.14.0",

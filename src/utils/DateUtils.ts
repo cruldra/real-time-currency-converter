@@ -6,6 +6,13 @@ export default class DateUtils {
     __DATE_FORMAT_STRING__
   );
 
+  static parse(
+    dateStr: string,
+    formatter: DateTimeFormatter = DateUtils.defaultDateFormatter
+  ) {
+    return LocalDate.parse(dateStr, formatter);
+  }
+
   static toString(
     date: LocalDate,
     formatter: DateTimeFormatter = DateUtils.defaultDateFormatter

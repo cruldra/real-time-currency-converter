@@ -40,9 +40,9 @@ class OutisnemoApiService
   async latest(base: TCurrencyCodes = "EUR"): Promise<ExchangeRates> {
     return <ExchangeRates>{};
   }
-
-  histories(date: string, base: TCurrencyCodes): Promise<ExchangeRates> {
-    throw new Error("unsupported");
+  @GET("https://raw.githubusercontent.com/cruldra/raws/main/empty.json")
+  async histories(date: string, base: TCurrencyCodes): Promise<ExchangeRates> {
+    return <ExchangeRates>{};
   }
 }
 
@@ -76,12 +76,10 @@ const outisnemoApiService = new ServiceBuilder()
   .setStandalone(true)
   .setTimeout(30000)
   .setRequestInterceptors((config) => {
-    console.log("Before sending request to server.");
     config.params["timestamp"] = new Date().getTime();
     return config;
   })
   .setResponseInterceptors((response) => {
-    console.log("After receiving response from server.");
     return response.data["rates"];
   })
   .build(OutisnemoApiService);
@@ -91,16 +89,12 @@ const openExchangeRatesApiService = new ServiceBuilder()
   .setStandalone(true)
   .setTimeout(30000)
   .setRequestInterceptors(async (config) => {
-    console.log("Before sending request to server.");
-
     config.params["app_id"] = ArrayUtils.randomItem(
       (await userSettingRepository.get()).apiKeys
     );
     return config;
   })
   .setResponseInterceptors((response) => {
-    console.log("After receiving response from server.");
-
     return response.data["rates"];
   })
   .build(OpenExchangeRatesApiService);

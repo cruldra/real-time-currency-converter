@@ -1,49 +1,77 @@
 <template>
-  <n-space v-for="(currency, i) in model.currencies" :key="i">
-    <n-input-number
-      :show-button="true"
-      v-model:value="model.values[i]"
-      min="0"
-      size="large"
-      class="amount"
-      @update:value="!disableUpdate && calc(i, $event)"
-    >
-      <template #prefix>{{ getCurrencySymbol(currency) }}</template>
-    </n-input-number>
-    <n-select
-      v-model:value="model.currencies[i]"
-      filterable
-      :options="options"
-      size="large"
-      @update:value="calc(latestUpdate)"
-    />
-    <n-button
-      v-if="i === model.currencies.length - 1"
-      type="success"
-      @click="
-        model.currencies.push('USD');
-        model.values.push(1);
-        calc(latestUpdate);
-      "
-    >
-      {{ addNewConversionButtonText }}
-    </n-button>
-    <n-button
-      v-if="model.currencies.length > 1"
-      type="error"
-      @click="
-        model.currencies.splice(i, 1);
-        model.values.splice(i, 1);
-        latestUpdate = 0;
-      "
-    >
-      {{ deleteConversionButtonText }}
-    </n-button>
+  <n-space vertical>
+    <n-space v-for="(currency, i) in model.currencies" :key="i">
+      <n-input-number
+        :show-button="true"
+        v-model:value="model.values[i]"
+        min="0"
+        size="large"
+        class="amount"
+        @update:value="!disableUpdate && calc(i, $event)"
+      >
+        <template #prefix>{{ getCurrencySymbol(currency) }}</template>
+      </n-input-number>
+      <n-select
+        v-model:value="model.currencies[i]"
+        filterable
+        :options="options"
+        size="large"
+        @update:value="calc(latestUpdate)"
+      />
+      <n-button
+        v-if="i === model.currencies.length - 1"
+        type="success"
+        @click="
+          model.currencies.push('USD');
+          model.values.push(1);
+          calc(latestUpdate);
+        "
+      >
+        {{ addNewConversionButtonText }}
+      </n-button>
+      <n-button
+        v-if="model.currencies.length > 1"
+        type="error"
+        @click="
+          model.currencies.splice(i, 1);
+          model.values.splice(i, 1);
+          latestUpdate = 0;
+        "
+      >
+        {{ deleteConversionButtonText }}
+      </n-button>
+    </n-space>
+    <n-space v-if="enableHistoricalReporting" vertical>
+      <n-radio-group
+        v-model:value="exchangeRateChartSpan"
+        name="radiobuttongroup2"
+        size="medium"
+      >
+        <template v-if="exchangeRateChartDurationsOption">
+          <n-radio-button
+            :key="key"
+            v-for="(option, key) in exchangeRateChartDurationsOption"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </n-radio-button>
+        </template>
+      </n-radio-group>
+      <div id="exchangeRateChart" style="width: 600px; height: 300px"></div>
+    </n-space>
   </n-space>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, onMounted, reactive, ref, withDefaults } from "vue";
+import {
+  defineProps,
+  onMounted,
+  reactive,
+  Ref,
+  ref,
+  watch,
+  withDefaults,
+} from "vue";
 import {
   NInputNumber,
   NSpace,
@@ -51,12 +79,22 @@ import {
   SelectGroupOption,
   SelectOption,
   NButton,
+  NGrid,
+  NRadioButton,
+  NRadioGroup,
+  NDivider,
 } from "naive-ui";
 import currencyConversionService from "@/services/CurrencyConversionService";
 import MathUtils from "@/utils/MathUtils";
 import useI18n from "@/hooks/useI18n";
 import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
 import exchangeRateRepository from "@/repositories/ExchangeRateRepository";
+import useHistoryReport, {
+  TCreateChartFun,
+  TExchangeRateChatDurationsOption,
+} from "@/hooks/useHistoryReport";
+import { ArrayStream } from "@/utils/Stream";
+
 interface Model {
   currencies: TCurrencyCodes[];
   values: number[];
@@ -86,8 +124,6 @@ const props = withDefaults(
     },
   }
 );
-
-//const { amount, src, targets } = toRefs(reactive(Object.assign({}, props)));
 const {
   addNewConversionButtonText,
   deleteConversionButtonText,
@@ -108,36 +144,61 @@ const options: Array<SelectOption | SelectGroupOption> = currencies.value.map(
     };
   }
 );
-
+const enableHistoricalReporting = ref(false);
+const exchangeRateChartSpan = ref(7);
+watch(exchangeRateChartSpan, (value) => {
+  calc(latestUpdate.value);
+});
+const exchangeRateChartDurationsOption: Ref<
+  TExchangeRateChatDurationsOption | undefined
+> = ref({});
 const disableUpdate = ref(false);
 const latestUpdate = ref(0);
 const calc = (index: number) => {
   disableUpdate.value = true;
   let srcCurrency = model.currencies[index];
   let srcAmount = model.values[index];
-  model.currencies.forEach(async (currency: TCurrencyCodes, i: number) => {
-    if (i !== index) {
-      const targetAmount = await currencyConversionService.convert(
-        srcCurrency,
-        currency,
-        srcAmount
-      );
-      model.values[i] = MathUtils.round(targetAmount, 6);
+  model.currencies.forEach(
+    async (targetCurrency: TCurrencyCodes, i: number) => {
+      if (i !== index) {
+        const targetAmount = await currencyConversionService.convert(
+          srcCurrency,
+          targetCurrency,
+          srcAmount
+        );
+        model.values[i] = MathUtils.round(targetAmount, 6);
 
-      console.log({
-        srcCurrency,
-        srcAmount,
-        targetCurrency: currency,
-        targetValue: targetAmount,
-        rate: await exchangeRateRepository.findBy(srcCurrency, currency),
-      });
+        console.log({
+          srcCurrency,
+          srcAmount,
+          targetCurrency: targetCurrency,
+          targetValue: targetAmount,
+          rate: await exchangeRateRepository.findBy(
+            srcCurrency,
+            targetCurrency
+          ),
+        });
+      }
     }
-  });
+  );
   latestUpdate.value = index;
   disableUpdate.value = false;
+  if (enableHistoricalReporting.value && createChartFun) {
+    createChartFun(
+      exchangeRateChartSpan.value,
+      srcCurrency,
+      ArrayStream.of(model.currencies).skip(index).value
+    );
+  }
 };
+let createChartFun: TCreateChartFun | undefined = undefined;
 onMounted(async () => {
-  console.log(model);
+  const { enable, createChart, durationsOption } = await useHistoryReport(
+    "exchangeRateChart"
+  );
+  enableHistoricalReporting.value = enable;
+  createChartFun = createChart;
+  exchangeRateChartDurationsOption.value = durationsOption;
   calc(0);
 });
 </script>

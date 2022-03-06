@@ -38,7 +38,7 @@
     "description": "用户设置表单项: IUserSetting.updateFrequency"
   },
   "user_setting_form_item_enable_historical_reporting": {
-    "message": "{\"label\":\"启用历史报表\"}",
+    "message": "{\"label\":\"显示汇率图表\"}",
     "description": "用户设置表单项: IUserSetting.enableHistoricalReporting"
   },
   "user_setting_form_item_api_keys": {
@@ -56,6 +56,24 @@
       "cause": {
         "content": "$1",
         "example": "未知的错误"
+      }
+    }
+  },
+  "exchange_rate_chart_duration": {
+    "message": "{\"week\":{\"label\":\"7天\",\"value\":7},\"month\":{\"label\":\"30天\",\"value\":30}}",
+    "description": "汇率图表的时间跨度"
+  },
+  "exchange_rate_chart_options": {
+    "message": "{\"title\":\"$source$与其他货币$days$天汇率走势\"}",
+    "description": "汇率图表设置国际化配置",
+    "placeholders": {
+      "source": {
+        "content": "$1",
+        "example": "CNY"
+      },
+      "days": {
+        "content": "$2",
+        "example": "7"
       }
     }
   }

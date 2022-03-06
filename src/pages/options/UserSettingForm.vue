@@ -150,7 +150,6 @@ const saveUserSetting = (e: MouseEvent) => {
 };
 onMounted(async () => {
   const userSetting = await userSettingRepository.get();
-  console.log(userSetting);
   model.value = ObjectMapper.map(userSetting, {
     apiKeys: Transformers.ArrayToString(),
     wordMarkingRules: Transformers.ArrayToString(),
