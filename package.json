@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@js-joda/core": "^5.2.0",
+    "@satha/core": "^2.0.0",
     "@types/chrome": "^0.0.179",
     "@types/cron": "^1.7.3",
     "core-js": "^3.8.3",

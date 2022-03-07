@@ -16,7 +16,10 @@
         filterable
         :options="options"
         size="large"
-        @update:value="calc(latestUpdate)"
+        @update:value="
+          calc(latestUpdate);
+          emitUpdateProfileEvent();
+        "
       />
       <n-button
         v-if="i === model.currencies.length - 1"
@@ -25,6 +28,7 @@
           model.currencies.push('USD');
           model.values.push(1);
           calc(latestUpdate);
+          emitUpdateProfileEvent();
         "
       >
         {{ addNewConversionButtonText }}
@@ -36,6 +40,8 @@
           model.currencies.splice(i, 1);
           model.values.splice(i, 1);
           latestUpdate = 0;
+          calc(latestUpdate);
+          emitUpdateProfileEvent();
         "
       >
         {{ deleteConversionButtonText }}
@@ -64,7 +70,9 @@
 
 <script lang="ts" setup>
 import {
+  ComponentInternalInstance,
   defineProps,
+  getCurrentInstance,
   onMounted,
   reactive,
   Ref,
@@ -79,10 +87,8 @@ import {
   SelectGroupOption,
   SelectOption,
   NButton,
-  NGrid,
   NRadioButton,
   NRadioGroup,
-  NDivider,
 } from "naive-ui";
 import currencyConversionService from "@/services/CurrencyConversionService";
 import MathUtils from "@/utils/MathUtils";
@@ -92,8 +98,9 @@ import exchangeRateRepository from "@/repositories/ExchangeRateRepository";
 import useHistoryReport, {
   TCreateChartFun,
   TExchangeRateChatDurationsOption,
-} from "@/hooks/useHistoryReport";
+} from "@/hooks/useCharts";
 import { ArrayStream } from "@/utils/Stream";
+import { IConversionProfile } from "@/models/IConversionProfile";
 
 interface Model {
   currencies: TCurrencyCodes[];
@@ -101,26 +108,15 @@ interface Model {
 }
 const props = withDefaults(
   defineProps<{
-    /**
-     * amount of source currency
-     * */
-    amount?: number;
-
-    /**
-     * source currency code
-     */
-    src?: TCurrencyCodes;
-
-    /**
-     * target currency codes
-     */
-    targets?: TCurrencyCodes[];
+    profile: IConversionProfile;
   }>(),
   {
-    amount: 1,
-    src: "CNY",
-    targets: (): TCurrencyCodes[] => {
-      return ["AED"];
+    profile: () => {
+      return {
+        src: "CNY",
+        amount: 1,
+        targets: ["AED"],
+      };
     },
   }
 );
@@ -131,8 +127,11 @@ const {
   getCurrencySymbol,
 } = useI18n();
 const model = reactive({
-  currencies: [props.src, ...props.targets],
-  values: [props.amount, ...Array(props.targets.length).fill(0)],
+  currencies: [props.profile.src, ...props.profile.targets],
+  values: [
+    props.profile.amount,
+    ...Array(props.profile.targets.length).fill(0),
+  ],
 } as Model);
 
 const options: Array<SelectOption | SelectGroupOption> = currencies.value.map(
@@ -192,6 +191,14 @@ const calc = (index: number) => {
   }
 };
 let createChartFun: TCreateChartFun | undefined = undefined;
+const { emit } = getCurrentInstance() as ComponentInternalInstance;
+const emitUpdateProfileEvent = () => {
+  emit("update:profile", {
+    src: model.currencies[0],
+    amount: model.values[0],
+    targets: model.currencies.slice(1),
+  } as IConversionProfile);
+};
 onMounted(async () => {
   const { enable, createChart, durationsOption } = await useHistoryReport(
     "exchangeRateChart"

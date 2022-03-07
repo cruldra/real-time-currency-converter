@@ -18,7 +18,7 @@
       </template>
     </n-page-header>
     <n-layout embedded content-style="padding: 10px;">
-      <currency-converter />
+      <currency-converter v-model:profile="conversionProfile" />
     </n-layout>
     <n-global-style />
   </n-config-provider>
@@ -39,7 +39,8 @@ import {
 } from "naive-ui";
 import UseTheme from "@/hooks/useTheme";
 import useI18n from "@/hooks/useI18n";
-
+import UseProfile from "@/hooks/useProfile";
+const { conversionProfile } = UseProfile();
 const { currentTheme, nextThemeName, toggleTheme } = UseTheme();
 const { chrome_extension_name, naiveUiLocale, naiveUiDateLocale } = useI18n();
 onBeforeMount(() => {
