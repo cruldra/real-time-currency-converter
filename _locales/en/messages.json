@@ -64,7 +64,7 @@
     "description": "The time span of the exchange rate chart"
   },
   "exchange_rate_chart_options": {
-    "message": "{\"title\":\"Exchange Rate Trends Between $source$ and Other Currencies in $days$ Days\"}",
+    "message": "{\"title\":\"Rates from $source$ in $days$ Days\"}",
     "description": "The options i18n span of the exchange rate chart",
     "placeholders": {
       "source": {

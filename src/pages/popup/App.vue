@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 body {
-  width: 580px;
+  width: 600px;
   padding: 5px;
 }
 </style>
