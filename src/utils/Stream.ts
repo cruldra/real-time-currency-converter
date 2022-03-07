@@ -3,7 +3,7 @@ export interface IStreamable<T> {
 }
 
 export class SimpleStreamable<T> implements IStreamable<T> {
-  private _value: T;
+  private readonly _value: T;
 
   constructor(value: T) {
     this._value = value;

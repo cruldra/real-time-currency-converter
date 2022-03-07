@@ -17,7 +17,6 @@ import { CanvasRenderer } from "echarts/renderers";
 import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
 import DateUtils from "@/utils/DateUtils";
 import useI18n from "@/hooks/useI18n";
-import { LegendOption } from "echarts/types/dist/shared";
 
 export type TCreateChartFun = (
   days: number,
@@ -59,9 +58,10 @@ export default async function (chartId: string) {
       src: TCurrencyCodes,
       targets: TCurrencyCodes[]
     ) => {
-      const dateExchangeRates = (
-        await exchangeRateRepository.tables(LocalDate.now(), `-${days}`)
-      ).filter((it) => it.value);
+      const dateExchangeRates = await exchangeRateRepository.tables(
+        LocalDate.now(),
+        `-${days}`
+      );
       const labels = dateExchangeRates.map((it) =>
         it.date.substring(it.date.indexOf("-") + 1)
       );
@@ -107,7 +107,6 @@ export default async function (chartId: string) {
         },
         tooltip: {
           trigger: "axis",
-          formatter: `On {b}: <br />1 ${src} = {c} {a}`,
         },
         title: {
           left: "center",

@@ -173,7 +173,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
         "You must specify a date pattern in a valid format. Like +8 or -8"
       );
     const direction = match[1];
-    const numbers = match[2];
+    const days = parseInt(match[2]);
     const exchangeRates: Array<TDateExchangeRate> = [
       {
         date: DateUtils.toString(beginDate),
@@ -182,7 +182,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
     ];
     switch (direction) {
       case "+":
-        for (let i = 1; i <= parseInt(numbers); i++) {
+        for (let i = 1; i < days; i++) {
           const date = beginDate.plusDays(i);
           exchangeRates.push({
             date: DateUtils.toString(date),
@@ -191,7 +191,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
         }
         break;
       case "-":
-        for (let i = 1; i <= parseInt(numbers); i++) {
+        for (let i = 1; i < days; i++) {
           const date = beginDate.minusDays(i);
           exchangeRates.push({
             date: DateUtils.toString(date),
@@ -201,7 +201,7 @@ class DefaultExchangeRateDataService implements ExchangeRateRepository {
         break;
     }
 
-    return exchangeRates;
+    return direction === "-" ? exchangeRates.reverse() : exchangeRates;
   }
 }
 

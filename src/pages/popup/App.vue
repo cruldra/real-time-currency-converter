@@ -40,10 +40,11 @@ import {
 import UseTheme from "@/hooks/useTheme";
 import useI18n from "@/hooks/useI18n";
 import UseProfile from "@/hooks/useProfile";
+
 const { conversionProfile } = UseProfile();
 const { currentTheme, nextThemeName, toggleTheme } = UseTheme();
 const { chrome_extension_name, naiveUiLocale, naiveUiDateLocale } = useI18n();
-onBeforeMount(() => {
+onBeforeMount(async () => {
   reloadAllExchangeRateJob.start();
 });
 onBeforeUnmount(() => {
