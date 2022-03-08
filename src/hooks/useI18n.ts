@@ -78,6 +78,7 @@ export default function () {
   };
   [
     "preferredApi",
+    "frequentlyUsedCurrencies",
     "updateFrequency",
     "enableHistoricalReporting",
     "apiKeys",

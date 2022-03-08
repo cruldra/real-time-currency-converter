@@ -10,6 +10,10 @@ export class Transformers {
     (value: string) => {
       return value.split(delimiter);
     };
+  static ObjectToArray = () => (value: object | Array<any>) => {
+    if (Array.isArray(value)) return value;
+    return Object.values(value);
+  };
 }
 export default class ObjectMapper {
   static map(srcObj: any, mapObj: any, excludes: string[] = []) {

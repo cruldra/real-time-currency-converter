@@ -29,6 +29,19 @@
     </n-form-item>
 
     <n-form-item
+      :label="items.frequentlyUsedCurrencies.label"
+      :path="items.frequentlyUsedCurrencies.path"
+    >
+      <n-select
+        v-model:value="model.frequentlyUsedCurrencies"
+        filterable
+        multiple
+        :options="frequentlyUsedCurrenciesOptions"
+        size="large"
+      />
+    </n-form-item>
+
+    <n-form-item
       :label="items.updateFrequency.label"
       :path="items.updateFrequency.path"
     >
@@ -101,6 +114,9 @@ import {
   NButton,
   NSpace,
   useMessage,
+  SelectOption,
+  SelectGroupOption,
+  NSelect,
 } from "naive-ui";
 import { onMounted, ref, Ref } from "vue";
 import useI18n, {
@@ -111,7 +127,8 @@ import ObjectMapper, { Transformers } from "@/utils/ObjectMapper";
 import userSettingRepository from "@/repositories/UserSettingRepository";
 import { supportedApis } from "@/services/ExchangeRateApiService";
 import { IUserSetting } from "@/models/IUserSetting";
-const { userSettingFormI18n } = useI18n();
+import useContextmenu from "@/hooks/useContextmenu";
+const { userSettingFormI18n, currencies } = useI18n();
 
 let model: Ref<{
   [key in TUserSettingFormItemNames]?: string | number | boolean;
@@ -126,6 +143,7 @@ const rules = {
 };
 const message = useMessage();
 const userSettingForm = ref<FormInst | null>(null);
+let createContextMenuFn: () => void;
 const saveUserSetting = (e: MouseEvent) => {
   e.preventDefault();
   userSettingForm.value?.validate((errors) => {
@@ -138,6 +156,7 @@ const saveUserSetting = (e: MouseEvent) => {
         .save(latest)
         .then(() => {
           message.success(userSettingFormI18n.save.success);
+          if (createContextMenuFn) createContextMenuFn();
         })
         .catch((reason) => {
           if (typeof userSettingFormI18n.save.fail == "function")
@@ -148,12 +167,24 @@ const saveUserSetting = (e: MouseEvent) => {
     }
   });
 };
+const frequentlyUsedCurrenciesOptions: Array<SelectOption | SelectGroupOption> =
+  currencies.value.map((currency) => {
+    return {
+      label: `${currency.emoji} ${currency.code} —— ${currency.name}`,
+      value: `${currency.code}`,
+      ...currency,
+    };
+  });
+
 onMounted(async () => {
   const userSetting = await userSettingRepository.get();
   model.value = ObjectMapper.map(userSetting, {
     apiKeys: Transformers.ArrayToString(),
     wordMarkingRules: Transformers.ArrayToString(),
+    frequentlyUsedCurrencies: Transformers.ObjectToArray(),
   });
+  const { createContextmenu } = await useContextmenu();
+  createContextMenuFn = createContextmenu;
 });
 </script>
 

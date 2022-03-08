@@ -32,7 +32,10 @@
     "message": "{\"required_message\":\"You have to choose an api for updating exchange rate data\",\"label\":\"Preferred API\"}",
     "description": "the form item of IUserSetting.preferredApi"
   },
-
+  "user_setting_form_item_frequently_used_currencies": {
+    "message": "{\"label\":\"Frequently Used Currencies\"}",
+    "description": "the form item of IUserSetting.frequentlyUsedCurrencies"
+  },
   "user_setting_form_item_update_frequency": {
     "message": "{\"label\":\"Update Frequency\"}",
     "description": "the form item label of IUserSetting.preferredApi"
@@ -76,5 +79,10 @@
         "example": "7"
       }
     }
+  },
+
+  "context_menu_named_convert_to": {
+    "message": "Convert To",
+    "description": "name prefix for context menu named convert to ..."
   }
 }

@@ -1,9 +1,13 @@
-console.log("background is open");
-chrome.storage.onChanged.addListener((changes, namespace) => {
-  for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-    console.log(
-      `Storage key "${key}" in namespace "${namespace}" changed.`,
-      `Old value was "${oldValue}", new value is "${newValue}".`
-    );
-  }
+import useContextmenu from "@/hooks/useContextmenu";
+
+chrome.runtime.onInstalled.addListener(async () => {
+  const { createContextmenu } = await useContextmenu();
+
+  await createContextmenu(true);
+});
+chrome.contextMenus.onClicked.addListener(async (item, tab) => {
+  console.log("next. i need to identify the source currency and amount");
+  /*const url =
+    "https://google." + item.menuItemId + "/search?q=" + item.selectionText;*/
+  // await chrome.tabs.create({ url: url, index: tab.index + 1 });
 });

@@ -1,11 +1,18 @@
 /**
  * This class is used to store user settings
  */
+import { TCurrencyCodes } from "@/repositories/CurrencyRepository";
+
 export interface IUserSetting {
   /**
    * Preferred API for getting foreign currency exchange rate data
    */
   preferredApi: string;
+
+  /**
+   * Frequently used currencies
+   */
+  frequentlyUsedCurrencies: TCurrencyCodes[];
 
   /**
    * How often the exchange rate data is updated in minutes.
