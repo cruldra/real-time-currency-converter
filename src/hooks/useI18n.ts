@@ -13,7 +13,7 @@ export type TFormItemI18n = {
   label: string;
   required_message?: string;
   placeholder?: string;
-  referLink?: string;
+  tips?: string;
 };
 export type TUserSettingFormItems = {
   [key in TUserSettingFormItemNames]?: TFormItemI18n;

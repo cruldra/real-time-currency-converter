@@ -45,11 +45,11 @@
     "description": "用户设置表单项: IUserSetting.enableHistoricalReporting"
   },
   "user_setting_form_item_api_keys": {
-    "message": "{\"label\":\"API密钥\",\"placeholder\":\"api密钥,每行一个\",\"referLink\":\"点我申请\"}",
+    "message": "{\"label\":\"API密钥\",\"placeholder\":\"api密钥,每行一个\",\"tips\":\"点击跳转到密钥申请页面\"}",
     "description": "用户设置表单项: IUserSetting.apiKeys"
   },
   "user_setting_form_item_word_marking_rules": {
-    "message": "{\"label\":\"划词规则\",\"placeholder\":\"划词规则,每行一个\"}",
+    "message": "{\"label\":\"划词规则\",\"placeholder\":\"划词规则,每行一个\",\"tips\":\"划词规则是一个用于识别文本中货币符号、代码及金额的正则表达式.\\n有3个插值,{A}、{C}和{S},分别代表金额、货币代码和货币符号\"}",
     "description": "用户设置表单项: IUserSetting.wordMarkingRules"
   },
   "user_setting_form_save_messages": {

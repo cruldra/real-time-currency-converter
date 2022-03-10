@@ -45,11 +45,11 @@
     "description": "the form item label of IUserSetting.enableHistoricalReporting"
   },
   "user_setting_form_item_api_keys": {
-    "message": "{\"label\":\"API Keys\",\"placeholder\":\"api keys, one per line\",\"referLink\":\"Click me to apply\"}",
+    "message": "{\"label\":\"API Keys\",\"placeholder\":\"api keys, one per line\",\"tips\":\"Click to jump to the key request page\"}",
     "description": "the form item label of IUserSetting.apiKeys"
   },
   "user_setting_form_item_word_marking_rules": {
-    "message": "{\"label\":\"Word Marking Rules\",\"placeholder\":\"word marking rules,one per line\"}",
+    "message": "{\"label\":\"Word Marking Rules\",\"placeholder\":\"word marking rules,one per line\",\"tips\":\"A word-marking rule is a regular expression used to identify currency symbols, codes and amounts in text.\\nThere are 3 interpolations, {A}, {C} and {S}, which represent amount, currency code and currency symbol respectively\"}",
     "description": "the form item label of IUserSetting.wordMarkingRules"
   },
   "user_setting_form_save_messages": {

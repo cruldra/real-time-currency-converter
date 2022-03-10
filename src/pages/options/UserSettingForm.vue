@@ -52,27 +52,25 @@
       v-if="model.preferredApi === 'OpenExchange'"
       :path="items.apiKeys.path"
     >
-      <n-space vertical>
-        <n-input
-          v-model:value="model.apiKeys"
-          :placeholder="items.apiKeys.placeholder"
-          type="textarea"
-          :autosize="{
-            minRows: 5,
-            maxRows: 50,
-          }"
-        />
-        <n-button
-          text
-          @click="
-            window.location.href = supportedApis.find(
-              (api) => api.name === 'OpenExchange'
-            ).referLink
-          "
-        >
-          {{ items.apiKeys.referLink }}
-        </n-button>
-      </n-space>
+      <template #label>
+        <n-tooltip :style="{ maxWidth: '400px' }" trigger="hover">
+          <template #trigger>
+            <n-button text @click="openKeyRequestPage">
+              {{ items.apiKeys.label }}
+            </n-button>
+          </template>
+          {{ items.apiKeys.tips }}
+        </n-tooltip>
+      </template>
+      <n-input
+        v-model:value="model.apiKeys"
+        :placeholder="items.apiKeys.placeholder"
+        type="textarea"
+        :autosize="{
+          minRows: 5,
+          maxRows: 50,
+        }"
+      />
     </n-form-item>
     <n-form-item
       :label="items.enableHistoricalReporting.label"
@@ -84,6 +82,17 @@
       :label="items.wordMarkingRules.label"
       :path="items.wordMarkingRules.path"
     >
+      <template #label>
+        <n-tooltip :style="{ maxWidth: '400px' }" trigger="hover">
+          <template #trigger>
+            <n-button text>
+              {{ items.wordMarkingRules.label }}
+            </n-button>
+          </template>
+          {{ items.wordMarkingRules.tips }}
+        </n-tooltip>
+      </template>
+
       <n-input
         v-model:value="model.wordMarkingRules"
         :placeholder="items.wordMarkingRules.placeholder"
@@ -112,13 +121,13 @@ import {
   NRadioGroup,
   NSwitch,
   NButton,
-  NSpace,
+  NTooltip,
   useMessage,
   SelectOption,
   SelectGroupOption,
   NSelect,
 } from "naive-ui";
-import { onMounted, ref, Ref } from "vue";
+import { computed, onMounted, ref, Ref } from "vue";
 import useI18n, {
   TUserSettingFormItemNames,
   TUserSettingFormItems,
@@ -128,6 +137,7 @@ import userSettingRepository from "@/repositories/UserSettingRepository";
 import { supportedApis } from "@/services/ExchangeRateApiService";
 import { IUserSetting } from "@/models/IUserSetting";
 import useContextmenu from "@/hooks/useContextmenu";
+import useChromeTab from "@/hooks/useChromeTab";
 const { userSettingFormI18n, currencies } = useI18n();
 
 let model: Ref<{
@@ -176,6 +186,10 @@ const frequentlyUsedCurrenciesOptions: Array<SelectOption | SelectGroupOption> =
     };
   });
 
+let openNewTabFn: (url: string) => void;
+const openKeyRequestPage = () => {
+  if (openNewTabFn) openNewTabFn("https://openexchangerates.org/signup/free");
+};
 onMounted(async () => {
   const userSetting = await userSettingRepository.get();
   model.value = ObjectMapper.map(userSetting, {
@@ -185,6 +199,9 @@ onMounted(async () => {
   });
   const { createContextmenu } = await useContextmenu();
   createContextMenuFn = createContextmenu;
+
+  const { openNewTab } = await useChromeTab();
+  openNewTabFn = openNewTab;
 });
 </script>
 
