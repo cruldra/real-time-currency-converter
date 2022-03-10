@@ -11,7 +11,7 @@
 
 ![](https://raw.githubusercontent.com/cruldra/raws/main/uPic/UzciuJ.png)
 ![](https://raw.githubusercontent.com/cruldra/raws/main/uPic/bPRgcO.png)
-
+![](https://raw.githubusercontent.com/cruldra/raws/main/uPic/CtBgyN.png)
 # Technology stack
 * Vue3
 * Typescript
