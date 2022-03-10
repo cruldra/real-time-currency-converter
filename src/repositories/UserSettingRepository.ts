@@ -40,7 +40,7 @@ class DefaultUserSettingRepository implements UserSettingRepository {
       enableHistoricalReporting: true,
       preferredApi: "OpenExchange",
       updateFrequency: 60,
-      wordMarkingRules: [],
+      wordMarkingRules: ["{S} {A}", "{A} {C}"],
     };
     const res = (
       await chrome.storage.sync.get({

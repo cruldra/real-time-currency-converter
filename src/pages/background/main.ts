@@ -57,4 +57,5 @@ chrome.contextMenus.onClicked.addListener(async (item, tab) => {
       url: `chrome-extension://${chrome.runtime.id}/popup.html?src=${profile.currencyCode}&targets=${targets}&amount=${profile.amount}`,
     });
   }
+  throw new Error("can't recognize amount text");
 });
