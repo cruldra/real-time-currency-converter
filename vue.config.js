@@ -6,7 +6,6 @@ const pages = require("./pages");
 const { DefinePlugin } = require("webpack");
 const fs = require("fs");
 const profile = process.env["NODE_ENV"];
-const injections = require("./injections");
 console.log(`build for ${profile}..`);
 function getFiles(dir) {
   return fs.readdirSync(dir).flatMap((item) => {
@@ -42,7 +41,6 @@ module.exports = {
       }),
       new CopyWebpackPlugin({
         patterns: [
-          ...injections,
           {
             from: path.resolve("manifest.json"),
             to: `${path.resolve("dist")}/manifest.json`,

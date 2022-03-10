@@ -20,7 +20,8 @@
     "object-mapper": "^6.2.0",
     "timezone-enum": "^1.0.1",
     "ts-retrofit": "^1.14.0",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "xregexp": "^5.1.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",

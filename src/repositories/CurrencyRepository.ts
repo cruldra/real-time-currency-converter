@@ -20,6 +20,11 @@ interface ICurrencyRepository {
    * @param localeCode locale code
    */
   findByLocale(localeCode: TLocaleCodes): ICurrency[];
+
+  findFirstBySymbol(
+    symbol: string,
+    localeCode: TLocaleCodes
+  ): ICurrency | undefined;
 }
 class DefaultCurrencyRepository implements ICurrencyRepository {
   findByLocale(localeCode: TLocaleCodes = "zh_CN"): ICurrency[] {
@@ -30,6 +35,15 @@ class DefaultCurrencyRepository implements ICurrencyRepository {
           currency.code
         );
       });
+  }
+
+  findFirstBySymbol(
+    symbol: string,
+    localeCode: TLocaleCodes = "zh_CN"
+  ): ICurrency | undefined {
+    return this.findByLocale(localeCode).find((currency) => {
+      return currency.symbol == symbol;
+    });
   }
 }
 const currencyRepository = new DefaultCurrencyRepository();

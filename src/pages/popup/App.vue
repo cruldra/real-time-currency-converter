@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onBeforeUnmount } from "vue";
+import { onBeforeMount, onBeforeUnmount, onMounted } from "vue";
 import reloadAllExchangeRateJob from "@/jobs/ReloadAllExchangeRateJob";
 import CurrencyConverter from "@/components/CurrencyConverter.vue";
 import {
@@ -44,6 +44,7 @@ import UseProfile from "@/hooks/useProfile";
 const { conversionProfile } = UseProfile();
 const { currentTheme, nextThemeName, toggleTheme } = UseTheme();
 const { chrome_extension_name, naiveUiLocale, naiveUiDateLocale } = useI18n();
+
 onBeforeMount(async () => {
   reloadAllExchangeRateJob.start();
 });

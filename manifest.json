@@ -23,20 +23,5 @@
   },
   "host_permissions": [
     "*://*/*"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "css": [
-        "injections/wordmark_recognizing.css"
-      ],
-      "js": [
-        "injections/wordmark_recognizing.js"
-      ],
-      "run_at": "document_end",
-      "all_frames": true
-    }
   ]
 }

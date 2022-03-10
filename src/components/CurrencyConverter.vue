@@ -7,7 +7,7 @@
         min="0"
         size="large"
         class="amount"
-        @update:value="!disableUpdate && calc(i, $event)"
+        @update:value="!disableUpdate && calc(i)"
       >
         <template #prefix>{{ getCurrencySymbol(currency) }}</template>
       </n-input-number>
@@ -71,6 +71,7 @@
 <script lang="ts" setup>
 import {
   ComponentInternalInstance,
+  computed,
   defineProps,
   getCurrentInstance,
   onMounted,
@@ -126,14 +127,14 @@ const {
   currencies,
   getCurrencySymbol,
 } = useI18n();
-const model = reactive({
+
+const model = ref({
   currencies: [props.profile.src, ...props.profile.targets],
   values: [
     props.profile.amount,
     ...Array(props.profile.targets.length).fill(0),
   ],
 } as Model);
-
 const options: Array<SelectOption | SelectGroupOption> = currencies.value.map(
   (currency) => {
     return {
@@ -155,9 +156,9 @@ const disableUpdate = ref(false);
 const latestUpdate = ref(0);
 const calc = (index: number) => {
   disableUpdate.value = true;
-  let srcCurrency = model.currencies[index];
-  let srcAmount = model.values[index];
-  model.currencies.forEach(
+  let srcCurrency = model.value.currencies[index];
+  let srcAmount = model.value.values[index];
+  model.value.currencies.forEach(
     async (targetCurrency: TCurrencyCodes, i: number) => {
       if (i !== index) {
         const targetAmount = await currencyConversionService.convert(
@@ -165,7 +166,7 @@ const calc = (index: number) => {
           targetCurrency,
           srcAmount
         );
-        model.values[i] = MathUtils.round(targetAmount, 6);
+        model.value.values[i] = MathUtils.round(targetAmount, 6);
 
         console.log({
           srcCurrency,
@@ -186,7 +187,7 @@ const calc = (index: number) => {
     createChartFun(
       exchangeRateChartSpan.value,
       srcCurrency,
-      ArrayStream.of(model.currencies).skip(index).value
+      ArrayStream.of(model.value.currencies).skip(index).value
     );
   }
 };
@@ -194,9 +195,9 @@ let createChartFun: TCreateChartFun | undefined = undefined;
 const { emit } = getCurrentInstance() as ComponentInternalInstance;
 const emitUpdateProfileEvent = () => {
   emit("update:profile", {
-    src: model.currencies[0],
-    amount: model.values[0],
-    targets: model.currencies.slice(1),
+    src: model.value.currencies[0],
+    amount: model.value.values[0],
+    targets: model.value.currencies.slice(1),
   } as IConversionProfile);
 };
 onMounted(async () => {
